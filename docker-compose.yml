@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: azure_app_db
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-azuredb}
+      POSTGRES_USER: ${POSTGRES_USER:-azure}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-azurepass}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-azure} -d ${POSTGRES_DB:-azuredb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: azure_app_backend
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER:-azure}:${POSTGRES_PASSWORD:-azurepass}@db:5432/${POSTGRES_DB:-azuredb}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  frontend:
+    build: ./frontend
+    container_name: azure_app_frontend
+    networks:
+      - app-network
+
+  nginx:
+    build: ./nginx
+    container_name: azure_app_nginx
+    ports:
+      - "8080:80"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  pgdata:

@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  backend:
+    image: <twoj-acr>.azurecr.io/azure-app-backend:latest
+
+  frontend:
+    image: <twoj-acr>.azurecr.io/azure-app-frontend:latest
+
+  nginx:
+    image: <twoj-acr>.azurecr.io/azure-app-nginx:latest
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+      - frontend
