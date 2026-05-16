@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   backend:
-    image: <twoj-acr>.azurecr.io/azure-app-backend:latest
+    image: tekechiregistry.azurecr.io/azure_app_backend:latest
 
   frontend:
-    image: <twoj-acr>.azurecr.io/azure-app-frontend:latest
+    image: tekechiregistry.azurecr.io/azure_app_frontend:latest
 
   nginx:
-    image: <twoj-acr>.azurecr.io/azure-app-nginx:latest
+    image: tekechiregistry.azurecr.io/azure_app_nginx:latest
     ports:
       - "80:80"
     depends_on:
